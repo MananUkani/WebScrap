@@ -11,7 +11,8 @@ from requests.exceptions import RequestException
 
 def configure_logging(url):
     timestamp = time.strftime("%Y%m%d_%H%M%S")
-    log_filename = f"{url.split('//')[-1].replace('/', '_')}-{timestamp}.log"
+    sanitized_url = sanitize_filename(url.split('//')[-1].replace('/', '_'))
+    log_filename = f"{sanitized_url}-{timestamp}.log"
     logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s - %(message)s')
     return log_filename
 
@@ -148,7 +149,10 @@ def generate_html_report(results, file_name='report.html'):
 def main():
     base_url = input("Enter the URL to scan (including http/https): ")
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    resource_folder = 'resources'
+    
+    sanitized_url = sanitize_filename(base_url.split('//')[-1].replace('/', '_'))
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    resource_folder = os.path.join('E:\\cyberSec\\website_check', f'resources-{sanitized_url}-{timestamp}')
     
     log_filename = configure_logging(base_url)
     
@@ -172,7 +176,7 @@ def main():
     for resource_url in resource_urls:
         download_file(resource_url, resource_folder)
     
-    print("Resource capture complete. Check 'resources' folder for downloaded files.")
+    print(f"Resource capture complete. Check '{resource_folder}' folder for downloaded files.")
     
     results = []
 
@@ -196,10 +200,9 @@ def main():
     for result in results:
         print(result)
     
-    generate_html_report(results, file_name='report.html')
+    generate_html_report(results, file_name=os.path.join(resource_folder, 'report.html'))
     
     print("Generating report...")
-    
 
 if __name__ == "__main__":
     main()
