@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Scan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fffaf0; /* Warm white background */
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 20px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em; /* Adjusted font size */
+            color: black; /* Black text color */
+            display: none;
+            position: relative;
+        }
+        .circle span {
+            position: absolute;
+            font-size: 1.5em; /* Adjusted font size to fit inside the ring */
+        }
+        .loading {
+            font-size: 1.5em;
+            color: #333;
+        }
+        .more-info {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Security Scan</h1>
+    <form id="scan-form">
+        <input type="text" id="url" placeholder="Enter URL" required>
+        <button type="submit">Scan</button>
+    </form>
+    <div id="loading" class="loading" style="display: none;">Scanning...</div>
+    <div id="result" class="circle"><span id="score"></span></div>
+    <button id="more-info" class="more-info" style="display: none;">More Info</button>
+    <div id="details" class="more-info" style="display: none;"></div>
+    <div class="footer">Made by Manan Ukani</div>
+
+    <script>
+        document.getElementById('scan-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            const scoreSpan = document.getElementById('score');
+            const moreInfoButton = document.getElementById('more-info');
+            const detailsDiv = document.getElementById('details');
+
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            moreInfoButton.style.display = 'none';
+            detailsDiv.style.display = 'none';
+
+            const response = await fetch('/scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url })
+            });
+            const data = await response.json();
+            const score = data.score.toFixed(2); // Format score to two decimal places
+            const results = data.results;
+
+            loadingDiv.style.display = 'none';
+            scoreSpan.textContent = `${score}%`;
+            resultDiv.style.borderColor = `hsl(${score}, 100%, 50%)`;
+            resultDiv.style.display = 'flex';
+
+            moreInfoButton.style.display = 'block';
+            moreInfoButton.onclick = function() {
+                if (detailsDiv.style.display === 'none') {
+                    detailsDiv.innerHTML = results.map(result => `<p>${result[0]}: ${result[1]}</p>`).join('');
+                    detailsDiv.style.display = 'block';
+                    moreInfoButton.textContent = 'Hide Info';
+                } else {
+                    detailsDiv.style.display = 'none';
+                    moreInfoButton.textContent = 'More Info';
+                }
+            };
+        });
+    </script>
+</body>
+</html>
