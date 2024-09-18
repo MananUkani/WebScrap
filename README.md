@@ -37,22 +37,28 @@ This is a web application for performing security scans on URLs. The application
  pip install -r requirements.txt
 
  
-Usage
+**Usage**
 Open your web browser and navigate to http://localhost:5000.
 Enter the URL you want to scan in the input field and click the “Scan” button.
 View the scan results, including the score and detailed information.
-Project Structure
+
+
+**Project Structure**
+
 app.py: The main Flask application file.
 templates/index.html: The HTML template for the web interface.
 static/: Directory for static files (CSS, JavaScript).
 requirements.txt: List of Python dependencies.
-Contributing
+
+
+**Contributing**
+
 Contributions are welcome! Please fork the repository and submit a pull request.
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
+**Acknowledgements**
 
-Acknowledgements
 Flask
 Nmap
+
+
 Made by Manan Ukani
